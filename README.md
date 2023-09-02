@@ -39,6 +39,20 @@
 
 ## Описание решения ##
 
+Для вычисления расстояний по геокоординатам использовать `geopy`.
+
+```bash
+pip install geopy
+```
+
+```python
+from geopy.distance import geodesic as g_
+
+point1 = (40.7128, 74.0060)
+point2 = (31.9686, 99.9018)
+print('The distance is:', g_(point1, point2).km)
+```
+
 ----
 
 [:arrow_up: Содержание](#содержание)
