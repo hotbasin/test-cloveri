@@ -41,9 +41,12 @@
 
 ## Общее описание решения ##
 
-- В самом начале разработки не забыть аутентификацию OAuth2.
+- В самом начале разработки не забыть организовать аутентификацию OAuth2.
+Например, не обязательно с авторизацией через API Google или неких соцсетей, а,
+допустим с помощью JSON Web Token (JWT).
 
-- Для упрощения чистых SQL-запросов можно задать функцию `make_request()`:
+- Для упрощения чистых SQL-запросов можно задать функцию `make_request()`,
+которая далее используется в примерах:
 
 ```python
 import pandas as pd
@@ -163,11 +166,13 @@ check_time = str(time() - check_interval)
 
 query_str = f'''
 SELECT
-    user_id,
-    upd_time,
-    lat,
-    lng
-FROM db_name.positions
+    p.user_id AS uid,
+    u.name AS name,
+    p.upd_time AS upd_time,
+    p.lat AS lat,
+    p.lng AS lng
+FROM db_name.positions AS p
+JOIN db_name.users AS u ON p.user_id = u.user_id
 WHERE
     upd_time > {check_time}
 ORDER BY user_id, upd_time
@@ -176,7 +181,8 @@ ORDER BY user_id, upd_time
 query_df = make_request(query_str)
 ```
 
-И далее для вычисления расстояний по геокоординатам использовать `geopy`.
+В датафрейме выбираем тех врачей, у которых не меньше двух записей координат, и
+далее для вычисления расстояний по геокоординатам используется `geopy`.
 
 ```bash
 pip install geopy
@@ -198,6 +204,37 @@ print('The distance is:', g_(point1, point2).km)
 
 *(Написать SQL-запрос, который выведет всех врачей, для которых нет информации
 об их перемещениях за последний час.)*
+
+```python
+from time import time
+
+check_interval = 3600
+check_time = str(time() - check_interval)
+
+query_str = f'''
+SELECT
+    p.user_id AS uid,
+    u.name AS name,
+    MAX(p.upd_time) AS upd_time,
+FROM db_name.positions AS p
+JOIN db_name.users AS u ON p.user_id = u.user_id
+GROUP BY p.user_id
+HAVING MAX(p.upd_time) < {check_time}
+ORDER BY u.name
+'''
+
+query_df = make_request(query_str)
+```
+
+И теперь из полученного датафрейма мы можем выдать клиентскому приложению
+соответствующий словарь/json
+
+```python
+import json
+
+json_dict = json.loads(query_df.to_json())
+json.dumps(json_dict, ensure_ascii=False, indent=2)
+```
 
 [:arrow_up: Содержание](#содержание)
 
