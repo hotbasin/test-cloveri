@@ -41,6 +41,25 @@
 
 ## Общее описание решения ##
 
+- Для упрощения чистых SQL-запросов можно задать функцию `make_request()`:
+
+```python
+import pandas as pd
+import psycopg2 as pc
+
+CONN_ATTRIBS = {
+    'user': 'Login_Name',
+    'password': 'qwerty123',
+    'host': '127.0.0.4',
+    'port': 5432,
+    'dbname': 'DB_Name'
+}
+
+def make_request(query: str) -> object:
+    with pc.connect(**CONN_ATTRIBS) as conn:
+        return pd.read_sql_query(query, conn)
+```
+
 ## Ответ на вопрос 1 и 2 ##
 
 (Предложить описание используемых таблиц в базе данных, включая информацию о
@@ -98,20 +117,6 @@
     lat         FLOAT   Широта
     lng         FLOAT   Долгота
 
-Для вычисления расстояний по геокоординатам использовать `geopy`.
-
-```bash
-pip install geopy
-```
-
-```python
-from geopy.distance import geodesic as g_
-
-point1 = (40.7128, 74.0060)
-point2 = (31.9686, 99.9018)
-print('The distance is:', g_(point1, point2).km)
-```
-
 ----
 
 [:arrow_up: Содержание](#содержание)
@@ -129,11 +134,36 @@ print('The distance is:', g_(point1, point2).km)
 
 ## Ответ на вопрос 4 ##
 
+(Написать SQL-запрос, который выведет информацию о врачах, которые в последние
+10 минут переместились более чем на 1 км.)
+
+```python
+query_str = f'''SELECT'''
+
+```
+
+Для вычисления расстояний по геокоординатам использовать `geopy`.
+
+```bash
+pip install geopy
+```
+
+```python
+from geopy.distance import geodesic as g_
+
+point1 = (40.7128, 74.0060)
+point2 = (31.9686, 99.9018)
+print('The distance is:', g_(point1, point2).km)
+```
+
 [:arrow_up: Содержание](#содержание)
 
 ----
 
 ## Ответ на вопрос 5 ##
+
+(Написать SQL-запрос, который выведет всех врачей, для которых нет информации
+об их перемещениях за последний час.)
 
 [:arrow_up: Содержание](#содержание)
 
