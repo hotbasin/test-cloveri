@@ -15,10 +15,10 @@ def login_post() -> dict:
 
 
 @get('/users/all')
-def all_abon_get() -> dict:
+def all_users_get() -> dict:
     ''' Ресурс выдачи всей базы врачей и клиентов
     '''
-    return api_.all_abon_get(req_data=request.query.req_data)
+    return api_.all_users_get(req_data=request.query.req_data)
 
 
 @post('/coords/update')

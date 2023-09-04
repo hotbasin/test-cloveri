@@ -64,6 +64,12 @@ Web Token (JWT) и Access-token в header-часть JWT для авториза
 Примерная реализация (Сервер `Bottle`, база `SQLite`) приведена в следующих
 файлах:
 
+[**`srv_main.py`**](srv_main.py)&nbsp;&mdash; содержит определения требуемых
+ресурсов.
+
+[**`srv_api.py`**](srv_api.py)&nbsp;&mdash; для примера собраны некоторые методы
+API, импортируемые в [`srv_main.py`](srv_main.py).
+
 ----
 
 Если предположить использование СУБД PostgreSQL, то для упрощения чистых
@@ -100,7 +106,7 @@ def make_request(query: str) -> object:
 
 В базе данных 6 таблиц. Конечно, каждую из них можно дополнить новыми колонками.
 
-### users ###
+### Users ###
 
 Таблица с данными для авторизации/аутентификации, где доктора и пациенты вместе.
 
@@ -114,7 +120,7 @@ def make_request(query: str) -> object:
     ref_token   UUID    Refresh-token (аутентификация OAuth2)
     ref_expire  FLOAT   Время окончания действия Refresh-token (unix-time, seconds)
 
-### doctors ###
+### Doctors ###
 
 Таблица для участковых врачей
 
@@ -126,7 +132,7 @@ def make_request(query: str) -> object:
                         (идентичен districts.dist_id)
     day_route   TEXT    Текущий дневной маршрут доктора (список пациентов)
 
-### clients ###
+### Clients ###
 
 Таблица для пациентов
 
@@ -141,7 +147,7 @@ def make_request(query: str) -> object:
     lat         FLOAT   Широта
     lng         FLOAT   Долгота
 
-### cities ###
+### Cities ###
 
 Дополнительная таблица городов, где работают участковые врачи и живут пациенты,
 которая может пригодиться в будущем.
@@ -149,7 +155,7 @@ def make_request(query: str) -> object:
     city_id     UUID    Уникальный идентификатор города (Primary key)
     name        TEXT    Название города
 
-### districts ###
+### Districts ###
 
 Дополнительная таблица участков, которая может пригодиться в будущем.
 
@@ -158,7 +164,7 @@ def make_request(query: str) -> object:
     city_id     UUID    Уникальный идентификатор города
                         (идентичен cities.city_id)
 
-### positions ###
+### Positions ###
 
 Таблица, в которую постоянно заносятся координаты врачей.
 
@@ -202,7 +208,7 @@ payload-часть) и передаётся на сервер.
 10 минут переместились более чем на 1 км.)*
 
 Чтобы не загружать БД лишними вычислениями при SQL-запросе, просто запрашиваем
-врачей, у которых за последние 10 минут есть записи в таблице `positions`.
+врачей, у которых за последние 10 минут есть записи в таблице `Positions`.
 
 ```python
 from time import time
@@ -217,7 +223,7 @@ SELECT
     p.upd_time AS upd_time,
     p.lat AS lat,
     p.lng AS lng
-FROM db_name.positions AS p
+FROM db_name.Positions AS p
 JOIN db_name.users AS u ON p.user_id = u.user_id
 WHERE
     upd_time > {check_time}
@@ -283,8 +289,8 @@ SELECT
     p.user_id AS uid,
     u.name AS name,
     MAX(p.upd_time) AS upd_time,
-FROM db_name.positions AS p
-JOIN db_name.users AS u ON p.user_id = u.user_id
+FROM db_name.Positions AS p
+JOIN db_name.Users AS u ON p.user_id = u.user_id
 GROUP BY p.user_id
 HAVING MAX(p.upd_time) < {check_time}
 ORDER BY u.name
