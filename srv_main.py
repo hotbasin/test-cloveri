@@ -11,7 +11,7 @@ import srv_api as api_
 def login_post() -> dict:
     ''' Ресурс аутентификации на сервере через метод POST
     '''
-    return api_.login_getpost(request.json)
+    return api_.login_post(request.json)
 
 
 @get('/users/all')
