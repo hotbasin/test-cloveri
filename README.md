@@ -161,7 +161,7 @@ def make_request(query: str) -> object:
 
 ```json
 {
-    "user_id": "10000001-1111-1111-1111-100000000001",
+    "user_id": "10abcd01-ef11-1ff1-11ed-10accb000001",
     "upd_time": 1693742003.8034012,
     "lat": 55.755833,
     "lng": 37.617778
@@ -234,7 +234,7 @@ for n in range(len(doc_coords) - 1):
     path_length = 0
     coords0 = doc_coords[n]
     coords1 = doc_coords[n+1]
-    path_length += gd(coords1, coords2).km
+    path_length += gd(coords0, coords1).km
 if path_length > 1.0:
     # Этот врач прошёл более 1км. Добавляем его в список на выдачу.
 ```
